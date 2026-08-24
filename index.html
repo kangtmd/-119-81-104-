@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  
+  <!-- 웹 브라우저 탭에 표시되는 제목 -->
+  <title>신나는교회 시편 119편 81-104절 암송</title>
+  
+  <!-- 카카오톡 등 공유 시 보이는 정보 -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="📖 신나는교회 시편 119편 81-104절 암송" />
+  <meta property="og:description" content="음성인식으로 재미있게 신나는교회 시편 119편을 암송해보세요!" />
+  <meta property="og:image" content="https://images.unsplash.com/photo-1507434965515-61970f2bd7c6?w=600" />
+  <meta property="og:locale" content="ko_KR" />
+
+  <!-- Tailwind CSS & FontAwesome Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Canvas Confetti Library -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+    * { 
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    .mic-pulse {
+      box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+      animation: pulse-ring 1.5s infinite cubic-bezier(0.66, 0, 0, 1);
+    }
+    @keyframes pulse-ring {
+      to { box-shadow: 0 0 0 20px rgba(239, 68, 68, 0); }
+    }
+
+    .bottom-sheet {
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .sheet-hidden { transform: translateY(100%); }
+    .sheet-visible { transform: translateY(0); }
+
+    .custom-scroll::-webkit-scrollbar { width: 4px; }
+    .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+  </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between select-none max-w-md mx-auto shadow-2xl relative overflow-x-hidden border-x border-slate-200">
+
+  <!-- TOP APP BAR -->
+  <header class="sticky top-0 z-10 bg-white border-b border-slate-200 px-4 py-3 flex flex-col gap-2">
+    <div class="flex justify-between items-center">
+      <div class="flex items-center gap-2">
+        <span class="text-xl">📖</span>
+        <h1 class="font-bold text-slate-800 text-base">신나는교회 시편 119편 암송</h1>
+      </div>
+      
+      <div class="flex items-center gap-2">
+        <button onclick="restartPractice()" class="flex items-center justify-center w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 transition-all" title="처음부터 다시하기">
+          <i class="fa-solid fa-rotate-right text-sm"></i>
+        </button>
+
+        <button onclick="shareLink()" class="flex items-center justify-center w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 transition-all" title="앱 링크 공유하기">
+          <i class="fa-solid fa-share-nodes text-sm"></i>
+        </button>
+
+        <div class="flex items-center text-amber-500 gap-1 bg-amber-50 px-2 py-1 rounded-full border border-amber-200 text-xs font-bold">
+          <i class="fa-solid fa-fire text-amber-500"></i>
+          <span id="streakCount">0</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden border border-slate-200 relative">
+      <div id="progressBar" class="bg-emerald-500 h-full w-0 transition-all duration-500 rounded-full"></div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT AREA -->
+  <main class="p-4 flex-1 flex flex-col justify-between overflow-y-auto custom-scroll">
+    
+    <section class="bg-white p-3 rounded-xl shadow-sm border border-slate-200 flex flex-wrap gap-2 justify-between items-center text-xs font-semibold text-slate-600 mb-3">
+      <div class="flex items-center gap-1.5 flex-1 min-w-[130px]">
+        <i class="fa-solid fa-layer-group text-slate-400"></i>
+        <span>범위:</span>
+        <select id="rangeSelect" onchange="startRangePractice()" class="bg-slate-100 border border-slate-300 rounded-lg px-2 py-1 text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500 flex-1">
+          <option value="1">1구절씩 개별</option>
+          <option value="4">4구절 묶음</option>
+          <option value="8">8구절 묶음</option>
+        </select>
+      </div>
+
+      <div class="flex items-center gap-1.5 flex-1 min-w-[130px]">
+        <i class="fa-solid fa-location-dot text-slate-400"></i>
+        <span>시작:</span>
+        <select id="startVerseSelect" onchange="jumpToVerse()" class="bg-slate-100 border border-slate-300 rounded-lg px-2 py-1 text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500 flex-1">
+        </select>
+      </div>
+    </section>
+
+    <!-- VERSE CARD AREA -->
+    <div id="cardContainer" class="bg-white rounded-2xl p-5 shadow-sm border-2 border-slate-200 flex-1 flex flex-col justify-between mb-4 min-h-[260px] relative transition-all duration-300">
+      
+      <div>
+        <div class="flex justify-between items-center mb-5">
+          <button onclick="prevVerse()" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 hover:bg-emerald-100 hover:text-emerald-600 text-slate-400 transition-all">
+            <i class="fa-solid fa-chevron-left"></i>
+          </button>
+          
+          <div class="flex flex-col items-center">
+            <span id="verseTitle" class="bg-emerald-100 text-emerald-800 text-xs font-extrabold px-3 py-1 rounded-full border border-emerald-200 mb-1">
+              [ 81절 ]
+            </span>
+            <span id="cardCounter" class="text-[10px] text-slate-400 font-bold">1 / 24</span>
+          </div>
+
+          <button onclick="nextVerse()" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 hover:bg-emerald-100 hover:text-emerald-600 text-slate-400 transition-all">
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
+        </div>
+
+        <div id="verseContainer" class="space-y-4 text-base leading-relaxed text-slate-700">
+        </div>
+      </div>
+
+      <div id="speechComparisonBox" class="mt-4 pt-3 border-t border-slate-100 hidden">
+        <div class="text-xs font-bold text-slate-400 mb-2 flex items-center justify-between">
+          <span><i class="fa-solid fa-microphone text-rose-500 mr-1"></i> 인식된 단어 매칭:</span>
+          <span id="accuracyBadge" class="text-xs px-2 py-0.5 rounded-full font-bold"></span>
+        </div>
+        
+        <p id="transcriptText" class="text-xs text-slate-500 italic mb-2 bg-slate-50 p-2 rounded-lg border border-slate-200">
+          "암송 버튼을 누르고 말씀하세요..."
+        </p>
+
+        <div id="wordChipsContainer" class="flex flex-wrap gap-1.5">
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ACTION BUTTONS SECTION -->
+    <section class="space-y-2 mb-2">
+      <button id="micBtn" onclick="toggleSpeechRecognition()" class="w-full bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 text-base">
+        <i class="fa-solid fa-microphone text-lg"></i>
+        <span id="micBtnText">음성으로 암송하기</span>
+      </button>
+
+      <div class="grid grid-cols-2 gap-2">
+        <button id="revealBtn" onclick="toggleAnswer()" class="bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-white font-bold py-2.5 px-3 rounded-xl shadow-sm transition-all text-sm flex items-center justify-center gap-1.5">
+          <i class="fa-solid fa-eye" id="revealIcon"></i>
+          <span id="revealText">정답 확인</span>
+        </button>
+
+        <button id="audioBtn" onclick="speakText()" class="bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700 text-white font-bold py-2.5 px-3 rounded-xl shadow-sm transition-all text-sm flex items-center justify-center gap-1.5">
+          <i class="fa-solid fa-volume-high"></i>
+          <span>낭독 듣기</span>
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- DUOLINGO-STYLE BOTTOM FEEDBACK SHEET -->
+  <div id="feedbackSheet" class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bottom-sheet sheet-hidden z-20 p-5 rounded-t-3xl shadow-2xl border-t-2 border-slate-200">
+    <div class="flex items-start justify-between mb-3">
+      <div class="flex items-center gap-3">
+        <div id="feedbackIconBox" class="w-10 h-10 rounded-full flex items-center justify-center text-white text-xl font-bold">
+          <i id="feedbackIcon" class="fa-solid fa-check"></i>
+        </div>
+        <div>
+          <h3 id="feedbackTitle" class="font-black text-lg">대단해요!</h3>
+          <p id="feedbackDetail" class="text-xs opacity-90 font-medium">정확하게 암송하셨습니다.</p>
+        </div>
+      </div>
+      <span id="feedbackXpBadge" class="bg-white/20 text-xs font-bold px-2.5 py-1 rounded-full">
+        +10 XP
+      </span>
+    </div>
+
+    <button id="nextOrRetryBtn" onclick="handleSheetAction()" class="w-full font-extrabold py-3.5 px-4 rounded-xl shadow-lg transition-all text-base mt-2">
+      다음 구절로
+    </button>
+  </div>
+
+  <!-- COMPLETION MODAL -->
+  <div id="completionModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-30 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl p-6 w-full max-w-sm text-center shadow-2xl transform transition-all border-4 border-emerald-400">
+      <div class="w-20 h-20 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4 text-4xl shadow-inner">
+        🏆
+      </div>
+      <h2 class="text-2xl font-black text-slate-800 mb-1">암송 완료!</h2>
+      <p class="text-slate-500 text-xs mb-6">시편 119편 암송 목표를 달성하셨습니다.</p>
+      
+      <div class="bg-slate-50 p-4 rounded-2xl mb-6 space-y-2 text-sm font-semibold text-slate-600">
+        <div class="flex justify-between">
+          <span>총 학습 구절 카드:</span>
+          <span id="modalTotalCards" class="text-slate-800 font-bold">24개</span>
+        </div>
+        <div class="flex justify-between">
+          <span>획득한 총 XP:</span>
+          <span id="modalTotalXp" class="text-emerald-600 font-bold">240 XP</span>
+        </div>
+        <div class="flex justify-between">
+          <span>최대 연속 성공:</span>
+          <span id="modalMaxStreak" class="text-amber-500 font-bold">24회</span>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <button onclick="shareLink()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold py-3 rounded-xl transition-all text-sm flex items-center justify-center gap-2">
+          <i class="fa-solid fa-share-nodes"></i>
+          <span>친구들에게 이 앱 공유하기</span>
+        </button>
+        <button onclick="restartPractice()" class="w-full bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 text-white font-extrabold py-3.5 rounded-xl shadow-md transition-all text-base">
+          처음부터 다시 연습하기
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toastNotification" class="fixed top-16 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs font-bold px-4 py-2.5 rounded-full shadow-lg z-50 transition-all opacity-0 pointer-events-none">
+    🔗 링크가 클립보드에 복사되었습니다!
+  </div>
+
+  <script>
+    const verses = {
+      81: { hint: "나의 영혼이", text: "주의 구원을 사모하기에 피곤하오나 나는 주의 말씀을 바라나이다" },
+      82: { hint: "나의 말이", text: "주께서 언제나 나를 안위하실까 하면서 내 눈이 주의 말씀을 바라기에 피곤하니이다" },
+      83: { hint: "내가 연기속의", text: "가죽 부대 같이 되었으나 주의 율례들을 잊지 아니하나이다" },
+      84: { hint: "주의 종의", text: "날이 얼마나 되나이까 나를 핍박하는 자들을 주께서 언제나 심판하시리이까" },
+      85: { hint: "주의 법을", text: "따르지 아니하는 교만한 자들이 나를 해하려고 웅덩이를 팠나이다" },
+      86: { hint: "주의 모든", text: "계명들은 신실하니이다 그들이 이유 없이 나를 핍박하오니 나를 도우소서" },
+      87: { hint: "그들이 나를", text: "세상에서 거의 멸하였으나 나는 주의 법도들을 버리지 아니하였사오니" },
+      88: { hint: "주의 인자하심을", text: "따라 나를 살아나게 하소서 그리하시면 주의 입의 교훈들을 내가 지키리이다" },
+      89: { hint: "여호와여 주의", text: "말씀은 영원히 하늘에 굳게 섰사오며" },
+      90: { hint: "주의 성실하심은", text: "대대에 이르나이다 주께서 땅을 세우셨으므로 땅이 항상 있사오니" },
+      91: { hint: "천지가 주의", text: "규례들대로 오늘까지 있음은 만물이 주의 종이 된 까닭이니이다" },
+      92: { hint: "주의 법이", text: "나의 즐거움이 되지 아니하였더면 내가 내 고난 중에 멸망하였으리이다" },
+      93: { hint: "내가 주의", text: "법도들을 영원히 잊지 아니하오니 주께서 이것들 때문에 나를 살게 하심이니이다" },
+      94: { hint: "나는 주의", text: "것이오니 나를 구원하소서 내가 주의 법도들만을 찾았나이다" },
+      95: { hint: "악인들이 나를", text: "멸하려고 엿보으나 나는 주의 증거들만을 생각하겠나이다" },
+      96: { hint: "내가 보니", text: "모든 완전한 것이 다 끝이 있어도 주의 계명들은 심히 넓으니이다" },
+      97: { hint: "내가 주의", text: "법을 어찌 그리 사랑하는지요 내가 그것을 종일 작은 소리로 읊조리나이다" },
+      98: { hint: "주의 계명들이", text: "항상 나와 함께 하므로 그것들이 나를 원수보다 지혜롭게 하나이다" },
+      99: { hint: "내가 주의", text: "증거들을 늘 읊조리므로 나의 명철함이 나의 모든 스승보다 나으며" },
+      100: { hint: "주의 법도들을", text: "지키므로 나의 명철함이 노인보다 나으니이다" },
+      101: { hint: "내가 주의", text: "말씀을 지키려고 발을 금하여 모든 악한 길로 가지 아니하였사오며" },
+      102: { hint: "주께서 나를", text: "가르치셨으므로 내가 주의 규례들에서 떠나지 아니하였나이다" },
+      103: { hint: "주의 말씀의", text: "맛이 내게 어찌 그리 단지요 내 입에 꿀보다 더 다니이다" },
+      104: { hint: "주의 법도들로", text: "말미암아 내가 명철하게 되었으므로 모든 거짓 행위를 미워하나이다" }
+    };
+
+    let activeQueue = [];
+    let currentIndex = 0;
+    let streak = 0;
+    let xp = 0;
+    let maxStreak = 0;
+    let recognition = null;
+    let isRecording = false;
+    let isLastPassed = false;
+    let isAnswerRevealed = false;
+
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    
+    function playSoundEffect(type) {
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      const now = audioCtx.currentTime;
+
+      if (type === 'success') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(523.25, now);
+        osc.frequency.setValueAtTime(659.25, now + 0.08);
+        osc.frequency.setValueAtTime(783.99, now + 0.16);
+        osc.frequency.setValueAtTime(1046.50, now + 0.24);
+        gain.gain.setValueAtTime(0.15, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+        osc.start(now);
+        osc.stop(now + 0.5);
+      } else if (type === 'error') {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(220, now);
+        osc.frequency.setValueAtTime(196, now + 0.15);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+        osc.start(now);
+        osc.stop(now + 0.35);
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+      initSpeechRecognition();
+      startRangePractice();
+    });
+
+    function shareLink() {
+      const shareData = {
+        title: '📖 신나는교회 시편 119편 81-104절 암송',
+        text: '마이크 음성인식으로 재미있게 신나는교회 시편 119편을 암송해보세요!',
+        url: window.location.href
+      };
+
+      if (navigator.share) {
+        navigator.share(shareData).catch(() => copyToClipboard());
+      } else {
+        copyToClipboard();
+      }
+    }
+
+    function copyToClipboard() {
+      const dummy = document.createElement('input');
+      document.body.appendChild(dummy);
+      dummy.value = window.location.href;
+      dummy.select();
+      document.execCommand('copy');
+      document.body.removeChild(dummy);
+
+      showToast();
+    }
+
+    function showToast() {
+      const toast = document.getElementById("toastNotification");
+      toast.classList.remove("opacity-0", "pointer-events-none");
+      toast.classList.add("opacity-100");
+      setTimeout(() => {
+        toast.classList.remove("opacity-100");
+        toast.classList.add("opacity-0", "pointer-events-none");
+      }, 2500);
+    }
+
+    function initSpeechRecognition() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        document.getElementById("micBtnText").innerText = "음성 미지원 브라우저";
+        document.getElementById("micBtn").disabled = true;
+        document.getElementById("micBtn").classList.add("opacity-50", "cursor-not-allowed");
+        return;
+      }
+
+      recognition = new SpeechRecognition();
+      recognition.lang = 'ko-KR';
+      recognition.interimResults = true;
+      recognition.continuous = false;
+
+      recognition.onstart = function() {
+        isRecording = true;
+        const micBtn = document.getElementById("micBtn");
+        micBtn.classList.remove("bg-emerald-500", "hover:bg-emerald-600");
+        micBtn.classList.add("bg-rose-500", "hover:bg-rose-600", "mic-pulse");
+        document.getElementById("micBtnText").innerText = "듣고 있습니다... (말씀을 끝내면 자동 인식)";
+        
+        document.getElementById("speechComparisonBox").classList.remove("hidden");
+        document.getElementById("transcriptText").innerText = "음성을 듣는 중...";
+      };
+
+      recognition.onresult = function(event) {
+        let transcript = "";
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          transcript += event.results[i][0].transcript;
+        }
+        document.getElementById("transcriptText").innerText = `"${transcript}"`;
+        
+        if (event.results[0].isFinal) {
+          evaluateSpeech(transcript);
+        }
+      };
+
+      recognition.onerror = function(event) {
+        stopMicUI();
+        if (event.error !== 'no-speech') {
+          showFeedback(false, `음성 인식 오류: ${event.error}`, 0);
+        }
+      };
+
+      recognition.onend = function() {
+        stopMicUI();
+      };
+    }
+
+    function toggleSpeechRecognition() {
+      if (!recognition) return;
+      if (isRecording) {
+        recognition.stop();
+      } else {
+        hideFeedbackSheet();
+        recognition.start();
+      }
+    }
+
+    function stopMicUI() {
+      isRecording = false;
+      const micBtn = document.getElementById("micBtn");
+      micBtn.classList.remove("bg-rose-500", "hover:bg-rose-600", "mic-pulse");
+      micBtn.classList.add("bg-emerald-500", "hover:bg-emerald-600");
+      document.getElementById("micBtnText").innerText = "음성으로 암송하기";
+    }
+
+    function evaluateSpeech(spokenText) {
+      const currentGroup = activeQueue[currentIndex];
+      let fullTargetText = "";
+      currentGroup.forEach(num => {
+        fullTargetText += verses[num].hint + " " + verses[num].text + " ";
+      });
+
+      const cleanSpoken = spokenText.replace(/[^가-힣0-9]/g, "");
+      const cleanTarget = fullTargetText.replace(/[^가-힣0-9]/g, "");
+
+      const targetWords = fullTargetText.trim().split(/\s+/);
+      const spokenWords = spokenText.trim().split(/\s+/);
+
+      const wordChipsContainer = document.getElementById("wordChipsContainer");
+      wordChipsContainer.innerHTML = "";
+
+      let matchedWordCount = 0;
+
+      targetWords.forEach(targetWord => {
+        const cleanTargetWord = targetWord.replace(/[^가-힣0-9]/g, "");
+        const isMatched = spokenWords.some(spokenWord => {
+          const cleanSpokenWord = spokenWord.replace(/[^가-힣0-9]/g, "");
+          return cleanTargetWord && cleanSpokenWord && (cleanTargetWord.includes(cleanSpokenWord) || cleanSpokenWord.includes(cleanTargetWord));
+        });
+
+        const chip = document.createElement("span");
+        chip.className = `text-xs px-2 py-1 rounded-md font-bold transition-all ${
+          isMatched ? "bg-emerald-100 text-emerald-800 border border-emerald-300" : "bg-slate-100 text-slate-400 border border-slate-200"
+        }`;
+        chip.innerText = targetWord;
+        wordChipsContainer.appendChild(chip);
+
+        if (isMatched) matchedWordCount++;
+      });
+
+      let characterMatchCount = 0;
+      const minLength = Math.min(cleanSpoken.length, cleanTarget.length);
+      for (let i = 0; i < minLength; i++) {
+        if (cleanSpoken[i] === cleanTarget[i]) characterMatchCount++;
+      }
+
+      const charAccuracy = cleanTarget.length > 0 ? (characterMatchCount / cleanTarget.length) * 100 : 0;
+      const wordAccuracy = targetWords.length > 0 ? (matchedWordCount / targetWords.length) * 100 : 0;
+      const finalAccuracy = Math.round(Math.max(charAccuracy, wordAccuracy));
+
+      const accuracyBadge = document.getElementById("accuracyBadge");
+      accuracyBadge.innerText = `일치율: ${finalAccuracy}%`;
+      accuracyBadge.className = `text-xs px-2 py-0.5 rounded-full font-bold ${
+        finalAccuracy >= 60 ? "bg-emerald-100 text-emerald-700" : "bg-rose-100 text-rose-700"
+      }`;
+
+      if (!isAnswerRevealed) {
+        toggleAnswer(false);
+      }
+
+      if (finalAccuracy >= 60 || cleanTarget.includes(cleanSpoken)) {
+        showFeedback(true, `일치율 ${finalAccuracy}%로 성공했습니다!`, 10);
+      } else {
+        showFeedback(false, `일치율 ${finalAccuracy}%입니다. 조금 더 연습해보세요!`, 0);
+      }
+    }
+
+    function getSelectedRangeData() {
+      const step = parseInt(document.getElementById("rangeSelect").value);
+      let queue = [];
+      for (let i = 81; i <= 104; i += step) {
+        let group = [];
+        for (let j = i; j < i + step && j <= 104; j++) {
+          group.push(j);
+        }
+        queue.push(group);
+      }
+      return queue;
+    }
+
+    function updateStartSelect() {
+      const select = document.getElementById("startVerseSelect");
+      select.innerHTML = "";
+      activeQueue.forEach((group, index) => {
+        let opt = document.createElement("option");
+        opt.value = index;
+        opt.innerText = group.length === 1 ? `${group[0]}절부터` : `${group[0]}~${group[group.length - 1]}절부터`;
+        select.appendChild(opt);
+      });
+    }
+
+    function startRangePractice() {
+      activeQueue = getSelectedRangeData();
+      updateStartSelect();
+      currentIndex = 0;
+      showVerse();
+    }
+
+    function jumpToVerse() {
+      stopAudio();
+      hideFeedbackSheet();
+      currentIndex = parseInt(document.getElementById("startVerseSelect").value);
+      showVerse();
+    }
+
+    function prevVerse() {
+      if (currentIndex > 0) {
+        currentIndex--;
+        showVerse();
+      }
+    }
+
+    function nextVerse() {
+      if (currentIndex < activeQueue.length - 1) {
+        currentIndex++;
+        showVerse();
+      } else {
+        triggerCompletion();
+      }
+    }
+
+    function showVerse() {
+      stopAudio();
+      hideFeedbackSheet();
+      document.getElementById("speechComparisonBox").classList.add("hidden");
+
+      if (currentIndex >= activeQueue.length) {
+        triggerCompletion();
+        return;
+      }
+
+      document.getElementById("startVerseSelect").value = currentIndex;
+
+      const progressPercent = ((currentIndex) / activeQueue.length) * 100;
+      document.getElementById("progressBar").style.width = `${progressPercent}%`;
+      document.getElementById("cardCounter").innerText = `${currentIndex + 1} / ${activeQueue.length}`;
+
+      const currentGroup = activeQueue[currentIndex];
+      const verseTitle = document.getElementById("verseTitle");
+      
+      if (currentGroup.length === 1) {
+        verseTitle.innerText = `[ ${currentGroup[0]}절 ]`;
+      } else {
+        verseTitle.innerText = `[ ${currentGroup[0]} ~ ${currentGroup[currentGroup.length - 1]}절 (${currentGroup.length}개 구절) ]`;
+      }
+
+      let htmlContent = "";
+      currentGroup.forEach(num => {
+        htmlContent += `
+          <div class="verse-item bg-slate-50 p-3 rounded-xl border border-slate-200">
+            <div class="font-bold text-emerald-700 text-sm mb-1">
+              💡 ${num}절 힌트: <span class="text-amber-600 font-extrabold">${verses[num].hint}</span>
+            </div>
+            <div class="full-text hidden text-slate-800 font-medium text-sm leading-relaxed mt-1">
+              ${verses[num].text}
+            </div>
+          </div>`;
+      });
+
+      document.getElementById("verseContainer").innerHTML = htmlContent;
+      
+      isAnswerRevealed = false;
+      updateRevealButtonUI();
+    }
+
+    function toggleAnswer(playSound = true) {
+      isAnswerRevealed = !isAnswerRevealed;
+      const fullTexts = document.querySelectorAll('.full-text');
+      
+      if (isAnswerRevealed) {
+        fullTexts.forEach(el => el.classList.remove('hidden'));
+        if (playSound) playSoundEffect('success');
+      } else {
+        fullTexts.forEach(el => el.classList.add('hidden'));
+      }
+      
+      updateRevealButtonUI();
+    }
+
+    function updateRevealButtonUI() {
+      const btn = document.getElementById("revealBtn");
+      const icon = document.getElementById("revealIcon");
+      const text = document.getElementById("revealText");
+
+      if (isAnswerRevealed) {
+        btn.classList.remove("bg-amber-500", "hover:bg-amber-600", "active:bg-amber-700");
+        btn.classList.add("bg-slate-500", "hover:bg-slate-600", "active:bg-slate-700");
+        icon.classList.remove("fa-eye");
+        icon.classList.add("fa-eye-slash");
+        text.innerText = "정답 숨기기 (재도전)";
+      } else {
+        btn.classList.remove("bg-slate-500", "hover:bg-slate-600", "active:bg-slate-700");
+        btn.classList.add("bg-amber-500", "hover:bg-amber-600", "active:bg-amber-700");
+        icon.classList.remove("fa-eye-slash");
+        icon.classList.add("fa-eye");
+        text.innerText = "정답 확인";
+      }
+    }
+
+    function showFeedback(isSuccess, detailText, rewardXp) {
+      isLastPassed = isSuccess;
+      const sheet = document.getElementById("feedbackSheet");
+      const iconBox = document.getElementById("feedbackIconBox");
+      const icon = document.getElementById("feedbackIcon");
+      const title = document.getElementById("feedbackTitle");
+      const detail = document.getElementById("feedbackDetail");
+      const xpBadge = document.getElementById("feedbackXpBadge");
+      const actionBtn = document.getElementById("nextOrRetryBtn");
+
+      sheet.classList.remove("sheet-hidden");
+      sheet.classList.add("sheet-visible");
+
+      if (isSuccess) {
+        playSoundEffect('success');
+        streak++;
+        xp += rewardXp;
+        if (streak > maxStreak) maxStreak = streak;
+
+        sheet.className = sheet.className.replace(/bg-\w+-\d+/g, '') + " bg-emerald-600 text-white border-emerald-500";
+        iconBox.className = "w-10 h-10 rounded-full flex items-center justify-center bg-white text-emerald-600 text-xl font-bold";
+        icon.className = "fa-solid fa-check";
+        title.innerText = "정답입니다!";
+        detail.innerText = detailText;
+        xpBadge.innerText = `+${rewardXp} XP`;
+        xpBadge.classList.remove("hidden");
+
+        actionBtn.className = "w-full bg-white text-emerald-700 font-extrabold py-3.5 px-4 rounded-xl shadow-lg hover:bg-slate-100 transition-all text-base mt-2";
+        actionBtn.innerText = "다음 구절로 진행";
+      } else {
+        playSoundEffect('error');
+        streak = 0;
+
+        sheet.className = sheet.className.replace(/bg-\w+-\d+/g, '') + " bg-rose-600 text-white border-rose-500";
+        iconBox.className = "w-10 h-10 rounded-full flex items-center justify-center bg-white text-rose-600 text-xl font-bold";
+        icon.className = "fa-solid fa-xmark";
+        title.innerText = "아쉬워요!";
+        detail.innerText = detailText;
+        xpBadge.classList.add("hidden");
+
+        actionBtn.className = "w-full bg-white text-rose-700 font-extrabold py-3.5 px-4 rounded-xl shadow-lg hover:bg-slate-100 transition-all text-base mt-2";
+        actionBtn.innerText = "다시 시도하기 (정답 가림)";
+      }
+
+      document.getElementById("streakCount").innerText = streak;
+      document.getElementById("xpCount").innerText = `${xp} XP`;
+    }
+
+    function hideFeedbackSheet() {
+      const sheet = document.getElementById("feedbackSheet");
+      sheet.classList.remove("sheet-visible");
+      sheet.classList.add("sheet-hidden");
+    }
+
+    function handleSheetAction() {
+      hideFeedbackSheet();
+      if (isLastPassed) {
+        nextVerse();
+      } else {
+        showVerse();
+      }
+    }
+
+    function speakText() {
+      if (!('speechSynthesis' in window)) {
+        alert("이 브라우저는 음성 합성을 지원하지 않습니다.");
+        return;
+      }
+      stopAudio();
+      const currentGroup = activeQueue[currentIndex];
+      let textToSpeak = "";
+      currentGroup.forEach(num => {
+        textToSpeak += `${num}절. ${verses[num].hint} ${verses[num].text}. `;
+      });
+
+      const utterance = new SpeechSynthesisUtterance(textToSpeak);
+      utterance.lang = 'ko-KR';
+      utterance.rate = 0.85;
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function stopAudio() {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    }
+
+    function triggerCompletion() {
+      document.getElementById("progressBar").style.width = "100%";
+      document.getElementById("completionModal").classList.remove("hidden");
+      document.getElementById("modalTotalCards").innerText = `${activeQueue.length}개`;
+      document.getElementById("modalTotalXp").innerText = `${xp} XP`;
+      document.getElementById("modalMaxStreak").innerText = `${maxStreak}회`;
+
+      if (typeof confetti === 'function') {
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+      }
+    }
+
+    function restartPractice() {
+      document.getElementById("completionModal").classList.add("hidden");
+      xp = 0;
+      streak = 0;
+      document.getElementById("streakCount").innerText = streak;
+      document.getElementById("xpCount").innerText = `${xp} XP`;
+      startRangePractice();
+    }
+  </script>
+</body>
+</html>
