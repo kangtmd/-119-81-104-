@@ -11,8 +11,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:title" content="📖 신나는교회 시편 119편 81-104절 암송" />
   <meta property="og:description" content="음성인식으로 재미있게 신나는교회 시편 119편을 암송해보세요!" />
-  <!-- ▼▼▼ 아래 주소 맨 끝의 'main.png'를 실제 파일 이름으로 변경하세요 ▼▼▼ -->
-<meta property="og:image" content="https://kangtmd.github.io/-119-81-104-/main.png" />
+  <meta property="og:image" content="https://kangtmd.github.io/-119-81-104-/main.png" />
   <meta property="og:locale" content="ko_KR" />
 
   <!-- Tailwind CSS & FontAwesome Icons -->
@@ -703,12 +702,13 @@
     }
 
     function restartPractice() {
+      // 완료 모달을 닫고, 점수 및 연속 기록 초기화 후 처음(81절)으로 강제 이동
       document.getElementById("completionModal").classList.add("hidden");
       xp = 0;
       streak = 0;
       document.getElementById("streakCount").innerText = streak;
       document.getElementById("xpCount").innerText = `${xp} XP`;
-      startRangePractice();
+      startRangePractice(); // 이 함수가 실행되면 currentIndex가 0이 되면서 81절(첫 화면)로 돌아갑니다.
     }
   </script>
 </body>
