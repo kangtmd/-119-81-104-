@@ -598,7 +598,7 @@
       }
     }
 
-    function showFeedback(isSuccess, detailText, rewardXp) {
+   function showFeedback(isSuccess, detailText, rewardXp) {
       isLastPassed = isSuccess;
       const sheet = document.getElementById("feedbackSheet");
       const iconBox = document.getElementById("feedbackIconBox");
@@ -607,6 +607,21 @@
       const detail = document.getElementById("feedbackDetail");
       const xpBadge = document.getElementById("feedbackXpBadge");
       const actionBtn = document.getElementById("nextOrRetryBtn");
+
+      // 성공 시 표시될 추가 버튼('다시 시도하기')을 위한 컨테이너가 없다면 생성
+      let extraBtnContainer = document.getElementById("extraBtnContainer");
+      if (!extraBtnContainer) {
+        extraBtnContainer = document.createElement("div");
+        extraBtnContainer.id = "extraBtnContainer";
+        extraBtnContainer.className = "flex gap-2 w-full mt-2";
+        // 기존 버튼을 새로운 컨테이너 안으로 이동
+        actionBtn.parentNode.insertBefore(extraBtnContainer, actionBtn);
+        extraBtnContainer.appendChild(actionBtn);
+      } else {
+        // 기존 컨테이너가 있다면 안의 내용을 비움
+        extraBtnContainer.innerHTML = '';
+        extraBtnContainer.appendChild(actionBtn);
+      }
 
       sheet.classList.remove("sheet-hidden");
       sheet.classList.add("sheet-visible");
@@ -625,8 +640,21 @@
         xpBadge.innerText = `+${rewardXp} XP`;
         xpBadge.classList.remove("hidden");
 
-        actionBtn.className = "w-full bg-white text-emerald-700 font-extrabold py-3.5 px-4 rounded-xl shadow-lg hover:bg-slate-100 transition-all text-base mt-2";
+        // 성공 시: '다시 시도하기' 버튼과 '다음 구절로' 버튼을 나란히 배치
+        actionBtn.className = "w-2/3 bg-white text-emerald-700 font-extrabold py-3.5 px-4 rounded-xl shadow-lg hover:bg-slate-100 transition-all text-base";
         actionBtn.innerText = "다음 구절로 진행";
+        actionBtn.onclick = handleSheetAction; // 다음 구절로 넘어가는 원래 기능
+
+        const retryCurrentBtn = document.createElement("button");
+        retryCurrentBtn.className = "w-1/3 bg-emerald-500 text-white border border-emerald-400 font-bold py-3.5 px-2 rounded-xl shadow-sm hover:bg-emerald-400 transition-all text-sm";
+        retryCurrentBtn.innerText = "다시 시도";
+        // '다시 시도' 클릭 시: 다음으로 넘어가지 않고 현재 구절(showVerse)을 다시 표시
+        retryCurrentBtn.onclick = function() {
+          hideFeedbackSheet();
+          showVerse(); 
+        };
+        extraBtnContainer.insertBefore(retryCurrentBtn, actionBtn);
+
       } else {
         playSoundEffect('error');
         streak = 0;
@@ -638,27 +666,14 @@
         detail.innerText = detailText;
         xpBadge.classList.add("hidden");
 
-        actionBtn.className = "w-full bg-white text-rose-700 font-extrabold py-3.5 px-4 rounded-xl shadow-lg hover:bg-slate-100 transition-all text-base mt-2";
+        // 실패 시: 기존처럼 '다시 시도하기' 버튼 하나만 꽉 차게 표시
+        actionBtn.className = "w-full bg-white text-rose-700 font-extrabold py-3.5 px-4 rounded-xl shadow-lg hover:bg-slate-100 transition-all text-base";
         actionBtn.innerText = "다시 시도하기 (정답 가림)";
+        actionBtn.onclick = handleSheetAction; 
       }
 
       document.getElementById("streakCount").innerText = streak;
       document.getElementById("xpCount").innerText = `${xp} XP`;
-    }
-
-    function hideFeedbackSheet() {
-      const sheet = document.getElementById("feedbackSheet");
-      sheet.classList.remove("sheet-visible");
-      sheet.classList.add("sheet-hidden");
-    }
-
-    function handleSheetAction() {
-      hideFeedbackSheet();
-      if (isLastPassed) {
-        nextVerse();
-      } else {
-        showVerse();
-      }
     }
 
     function speakText() {
