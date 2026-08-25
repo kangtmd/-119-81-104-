@@ -702,13 +702,15 @@
     }
 
     function restartPractice() {
-      // 완료 모달을 닫고, 점수 및 연속 기록 초기화 후 처음(81절)으로 강제 이동
+      // 1. 완료 모달 강제 닫기
       document.getElementById("completionModal").classList.add("hidden");
+      // 2. 점수 및 연속 기록 초기화
       xp = 0;
       streak = 0;
       document.getElementById("streakCount").innerText = streak;
-      document.getElementById("xpCount").innerText = `${xp} XP`;
-      startRangePractice(); // 이 함수가 실행되면 currentIndex가 0이 되면서 81절(첫 화면)로 돌아갑니다.
+      // 3. 범위와 첫 번째 구절을 81절(인덱스 0)로 완전히 강제 초기화
+      document.getElementById("rangeSelect").value = "1";
+      startRangePractice();
     }
   </script>
 </body>
